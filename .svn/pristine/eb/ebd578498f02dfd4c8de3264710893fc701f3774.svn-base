@@ -1,0 +1,103 @@
+import React, {useState, } from 'react'
+import PropTypes from 'prop-types'
+import { CartContainer, StyledEmployeeTitle, StyledEmployeeContainer, StyledEmployeeSubTitle, CartItemsDiv, HeightFillerDiv,
+        CartItemContainer, StyledInput, CartItemTitle, CartItemPrice, DeleteIcon, MarginTopDiv, CostContainer, StyledButton,
+        ButtonText, ContainerFlex, StyledInfoIcon, EmployeeRowContainer, SubsidyText, TooltipTitle, CenteringFlex, DetailsPrice } from './cart.styled' 
+import CreditLimit from '../credit-limit'
+import AccountSelector from "../../components/account-selector";
+import PaymentMethod from '../payment-method';
+import InfoContainer from '../Info-container';
+import { accountTypes } from '../../constants';
+import HtmlTooltip from '../htmlTooltip';
+import AlertContainer from '../alert-container';
+
+const Cart = ({cashOrCardValue, amountToProcess, toUseBenefits, benefits, employeeName, employeeId, employeeBalance, selectedProducts, editProductQuantity, deleteComboCart, selectedPaymentMethod,
+     setSelectedPaymentMethod, deleteProductCart, subTotal, itbis, buttonText, setOpenModal, isCompanyAccount, selectedAccountTypeId, setSelectedAccountTypeId, openNotEnoughBalanceMessage, cartAlert, handleCloseCartAlert}) => {
+    const [showCredit, setShowCredit] = useState(false)
+
+
+    return  <CartContainer>
+                {!employeeName ? null : <>
+                    <StyledEmployeeContainer backgroundColor={selectedAccountTypeId ===1 ? '#6ec4e8' : '#ff8d6a'}>
+                        <EmployeeRowContainer>
+                            <div>
+                                <StyledEmployeeTitle>{employeeName}</StyledEmployeeTitle>
+                                <StyledEmployeeSubTitle>{employeeId}</StyledEmployeeSubTitle>
+                            </div>
+                            <ContainerFlex>
+                                <StyledEmployeeSubTitle>{employeeBalance}</StyledEmployeeSubTitle>
+                                <StyledInfoIcon onClick={() => setShowCredit(!showCredit)}/>
+                            </ContainerFlex>
+                        </EmployeeRowContainer>
+                        {isCompanyAccount && <AccountSelector selectedAccountTypeId={selectedAccountTypeId} setSelectedAccountTypeId={setSelectedAccountTypeId}/>}
+                    </StyledEmployeeContainer>
+                    {selectedAccountTypeId === accountTypes.employee && <PaymentMethod selectedPaymentMethod={selectedPaymentMethod} setSelectedPaymentMethod={setSelectedPaymentMethod}/>}
+                    <CartItemsDiv>
+                        { showCredit && <CreditLimit balances={benefits?.benefits || null} close={() => setShowCredit(false)}/> }
+                        <HeightFillerDiv>
+                            <AlertContainer setVisible={selectedProducts?.length > 0 && cartAlert?.function && cartAlert?.text ? true : false} onAccept={cartAlert.function} onClose={handleCloseCartAlert} changeText={cartAlert.text}/>
+                            {selectedProducts.map(product => <CartItemContainer key={product.combo ? product.key : product.id}> 
+                                <ContainerFlex>
+                                    <StyledInput sx={{ input: { color: '#696969' } }} disableUnderline type='number' value={product.quantity} onChange={(e) => { editProductQuantity(product.id, e.target.value)}}/>
+                                    <CartItemTitle style={{wordBreak: 'break-word'}}>{product.name}</CartItemTitle>
+                                </ContainerFlex>
+                                <ContainerFlex>
+                                    <CartItemPrice>{`RD$ ${(product.price * product.quantity).toFixed(2)}`}</CartItemPrice>
+                                    <DeleteIcon onClick={() => {product.selectedProductIndexes ? deleteComboCart(product) : deleteProductCart(product.id)}}/> 
+                                </ContainerFlex>
+                            </CartItemContainer>)}
+                        </HeightFillerDiv>
+                        {subTotal ? <MarginTopDiv>
+                            {cashOrCardValue ? <InfoContainer cashOrCardValue={cashOrCardValue}/> : null}
+                            <HtmlTooltip arrow open={openNotEnoughBalanceMessage} placement='top-start' title={<TooltipTitle>No hay suficiente balance</TooltipTitle>}>
+                                <CostContainer>
+                                    <CartItemTitle>Subtotal</CartItemTitle>
+                                    <DetailsPrice>{`RD$ ${subTotal.toFixed(2)}`}</DetailsPrice>
+                                </CostContainer>
+                            </HtmlTooltip>
+                            {Object.entries(itbis).map(entry =><CostContainer key={entry[0]}>
+                                <CartItemTitle>{entry[0]}</CartItemTitle>
+                                <DetailsPrice>{`RD$ ${entry[1].toFixed(2)}`}</DetailsPrice>
+                            </CostContainer>)}
+                            {Object.entries(toUseBenefits).map(entry => <CostContainer key={entry[0]}>
+                                <SubsidyText textColor='#6ec4e8'>{entry[0][0].toUpperCase() + entry[0].slice(1)}</SubsidyText>
+                                <SubsidyText textColor='#6ec4e8'>{`RD$ ${entry[1].toFixed(2)}`}</SubsidyText>
+                            </CostContainer>)}
+                            <StyledButton onClick={() => setOpenModal(true)} variant='contained'>
+                                <ButtonText>
+                                    {buttonText}
+                                </ButtonText>
+                                <ButtonText bold>
+                                {`RD$ ${amountToProcess.toFixed(2)}`}
+                                </ButtonText>
+                            </StyledButton>
+                        </MarginTopDiv> : <CenteringFlex><div><HtmlTooltip open={openNotEnoughBalanceMessage} placement='top' title={<TooltipTitle>No hay suficiente balance</TooltipTitle>}><div style={{marginLeft: '-20px'}}/></HtmlTooltip></div></CenteringFlex>}
+                    </CartItemsDiv>
+                </>}
+            </CartContainer>
+}
+
+Cart.propTypes = {
+    employeeName: PropTypes.string.isRequired,
+    employeeBalance: PropTypes.string.isRequired,
+    employeeId: PropTypes.string,
+    selectedProducts: PropTypes.array.isRequired,
+    editProductQuantity: PropTypes.func.isRequired,
+    deleteComboCart: PropTypes.func.isRequired,
+    deleteProductCart: PropTypes.func.isRequired,
+    subTotal: PropTypes.number,
+    toUseBenefits: PropTypes.object,
+    amountToProcess: PropTypes.number,
+    cashOrCardValue: PropTypes.number,
+    itbis: PropTypes.object,
+    buttonText: PropTypes.string.isRequired,
+    setOpenModal: PropTypes.func,
+    isCompanyAccount: PropTypes.bool,
+    openNotEnoughBalanceMessage: PropTypes.bool,
+    setSelectedAccountTypeId: PropTypes.func,
+    selectedAccountTypeId: PropTypes.number,
+    selectedPaymentMethod: PropTypes.string,
+    setSelectedPaymentMethod: PropTypes.func,
+}
+
+export default Cart

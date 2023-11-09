@@ -1,0 +1,21 @@
+import React, { useState } from 'react'
+import { Container, Text, ButtonsContainer } from './cash-card-selector.styled'
+import RoundedButton from '../rounded-button'
+import { paymentMethods } from '../../constants'
+import PaymentAmountContainer from '../payment-amount-container'
+
+const CashCardSelector = ({primaryPaymentMethod, setSecondaryPaymentMethod, selectedSecondaryPaymentMethod, amount, openTooltip, cashValue, setCashValue}) => {
+
+    return <Container>
+        <Text>Elija un método de pago:</Text>
+        <ButtonsContainer>
+            <RoundedButton onClickHandler={() => setSecondaryPaymentMethod(paymentMethods.efectivo)} backgroundcolor={selectedSecondaryPaymentMethod === paymentMethods.efectivo ? '#6ec4e8' : '#c8c8c8'} text='Efectivo'/>
+            <RoundedButton onClickHandler={() => setSecondaryPaymentMethod(paymentMethods.tarjeta)} backgroundcolor={selectedSecondaryPaymentMethod === paymentMethods.tarjeta ? '#6ec4e8' : '#c8c8c8'} text='Tarjeta'/>
+        </ButtonsContainer>
+        {selectedSecondaryPaymentMethod && <PaymentAmountContainer amount={amount} primaryPaymentMethod={primaryPaymentMethod} secondaryPaymentMethod={selectedSecondaryPaymentMethod} 
+        onChangeCashValue={(e) => {setCashValue(e.target.value)}} openTooltip={openTooltip} cashValue={cashValue}/>
+        }
+    </Container>
+}
+
+export default CashCardSelector

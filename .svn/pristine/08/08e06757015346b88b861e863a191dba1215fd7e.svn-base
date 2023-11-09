@@ -1,0 +1,61 @@
+import React, { useReducer } from 'react'
+
+
+// Reducer-------------------------------------------------------------------------------------------------------------------
+const initialState = {
+    token: undefined,
+    userId: undefined,
+    providerId: undefined,
+    provider: undefined,
+    authenticate: ()=>{},
+}
+
+const actionTypes = {
+    authenticate: 'AUTHENTICATE',
+    setToken: 'SET_TOKEN',
+    setProviderId: 'SET_PROVIDERID',
+    clear: 'CLEAR'
+}
+
+const reducer = (state, action) => {
+    if (action.type === actionTypes.authenticate){
+        return {...state, token: action.payload.token, userId: action.payload.userId, providerId: action.payload.providerId, provider: action.payload.provider}
+    }
+
+    if (action.type === actionTypes.setToken){
+        return {...state, token: action.payload}
+    }
+
+    if (action.type === actionTypes.clear){
+        return initialState
+    }
+
+    return state
+}
+
+
+// Context ----------------------------------------------------------------------
+export const Context = React.createContext(initialState)
+
+
+const ContextProvider = props => {
+
+    const [state, dispatch] = useReducer(reducer, initialState)
+
+    const authenticate = (body) => {
+        dispatch({type: actionTypes.authenticate, payload: body})
+    }
+
+    return (
+        <Context.Provider value={{
+                token: state.token, 
+                userId: state.userId, 
+                providerId: state.providerId,
+                authenticate
+            }} >
+            {props.children}
+        </Context.Provider>
+    )
+}
+
+export default ContextProvider

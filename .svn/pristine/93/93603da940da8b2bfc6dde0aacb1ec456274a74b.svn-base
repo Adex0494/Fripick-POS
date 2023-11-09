@@ -1,0 +1,35 @@
+import styled from "styled-components";
+import Button from '@mui/material/Button';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+
+
+export const Typography = styled.div`
+    font-family: Hind Vadodara, Lucida Sans Unicode !important;
+    letter-spacing: 0.8px;
+    font-size: 10px;
+    font-weight: 500;
+`
+
+export const WarningIcon = styled(WarningAmberOutlinedIcon)`
+    color: #ff8d6a;
+`
+
+export const Container = styled.div`
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #e7e7e7;
+`
+
+export const ButtonsContainer = styled.div`
+    display: flex;
+    gap: 6px;
+`
+
+export const StyledButton = styled(Button)`
+    border-radius: 50px !important;
+    width: 62px;
+    height: 32px;
+    color: white !important;
+    background-color: ${({backgroundColor})=>backgroundColor} !important;
+`

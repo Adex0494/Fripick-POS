@@ -1,0 +1,34 @@
+import React, { useState } from 'react'
+import { Container, Text, ButtonsContainer, MethodContainer, StyledTextField } from './cash-card-selector.styled'
+import RoundedButton from '../rounded-button'
+
+const CashCardSelector = ({setSelectedPaymentMethod, selectedPaymentMethod, amount}) => {
+    const [cashValue, setCashValue] = useState('')
+    const [change, setChange] = useState(0)
+
+    const onChangeCashValue = (value) =>{
+        setCashValue(value)
+        const difference = value - amount
+        setChange(difference > 0 ? difference : 0)
+    }
+    return <Container>
+        <Text>Elija un método de pago:</Text>
+        <ButtonsContainer>
+            <RoundedButton onClickHandler={() => setSelectedPaymentMethod(1)} backgroundcolor={selectedPaymentMethod === 1 ? '#6ec4e8' : '#c8c8c8'} text='Efectivo'/>
+            <RoundedButton onClickHandler={() => setSelectedPaymentMethod(2)} backgroundcolor={selectedPaymentMethod === 2 ? '#6ec4e8' : '#c8c8c8'} text='Tarjeta'/>
+        </ButtonsContainer>
+        {selectedPaymentMethod && <MethodContainer>
+           <Text>{selectedPaymentMethod === 1 ? 'Efectivo' : 'Tarjeta'} <strong>RD$ {amount}</strong></Text>
+           {selectedPaymentMethod === 1 && <>
+                <StyledTextField value={cashValue} onChange={(e) => {onChangeCashValue(e.target.value)}} variant="outlined" type='number' placeholder='Digitar monto recibido'
+                    inputProps={{
+                            style: {fontSize: 16, height:8} 
+                        }}/>
+                <Text>Devuelta: <strong>RD$ {change.toFixed(2)}</strong></Text>
+           </>}
+        </MethodContainer>
+        }
+    </Container>
+}
+
+export default CashCardSelector

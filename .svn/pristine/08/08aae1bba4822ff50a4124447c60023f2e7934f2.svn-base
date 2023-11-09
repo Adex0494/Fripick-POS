@@ -1,0 +1,70 @@
+import { accountTypes, paymentMethods } from "../../constants"
+
+export const initialState = {
+    filterProductInputValue: '',
+    selectedProducts: [],
+    users: [],
+    catalogList: [],
+    selectedCatalogIndex: 0,
+    lastProductsOrdered: [],
+    goToComboPage: false,
+    selectedComboItem: {},
+    selectedCompany: {},
+    catalogTypeId: undefined,
+    catalogsCurrentDateTime: undefined,
+    initialTimeLeft: undefined,
+    timeLeft: undefined,
+    categories: [],
+    categoriesSelected: {},
+    alert: {open: false},
+    isLoading: false,
+    openModal: false,
+    selectedLetter: undefined,
+    selectedAccountTypeId: accountTypes.employee,
+    selectedPaymentMethod: paymentMethods.nomina,
+    availableBalanceToday: 0,
+    openNotEnoughBalanceMessage: false,
+    cartAlert: {function: null, text: null}
+}
+
+export const actionTypes = {
+    setFilterProductInputValue: 'setFilterProductInputValue',
+    setSelectedProducts: 'setSelectedProducts',
+    setUsers: 'setUsers',
+    setCatalogList: 'setCatalogList',
+    setSelectedCatalogIndex: 'setSelectedCatalogIndex',
+    setlastProductsOrdered: 'setlastProductsOrdered',
+    setGoToComboPage: 'setGoToComboPage',
+    setSelectedComboItem: 'setSelectedComboItem',
+    setSelectedCompany: 'setSelectedCompany',
+    setCatalogTypeId: 'setCatalogTypeId',
+    setCatalogsCurrentDateTime: 'setCatalogsCurrentDateTime',
+    setInitialTimeLeft: 'setInitialTimeLeft',
+    setTimeLeft: 'setTimeLeft',
+    setCategories: 'setCategories',
+    setCategoriesSelected: 'setCategoriesSelected',
+    setAlert: 'setAlert',
+    setIsLoading: 'setIsLoading',
+    setOpenModal: 'setOpenModal',
+    setSelectedLetter: 'setSelectedLetter',
+    setSelectedAccountTypeId: 'setSelectedAccountTypeId',
+    setSelectedPaymentMethod: 'setSelectedPaymentMethod',
+    setAvailableBalanceToday: 'setAvailableBalanceToday',
+    setOpenNotEnoughBalanceMessage: 'setOpenNotEnoughBalanceMessage',
+    setCartAlert: 'setCartAlert'
+}
+
+const mainReducer = (state, action) => {
+    if (action.type === actionTypes.setFilterProductInputValue){
+        return {...state, filterProductInputValue: action.payload}
+    }
+
+    if (action.type === actionTypes.setSelectedProducts){
+        return {...state, selectedProducts: action.payload}
+        
+    }
+
+    return state
+}
+
+export default mainReducer

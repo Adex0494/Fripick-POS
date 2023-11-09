@@ -1,0 +1,13 @@
+import React from 'react'
+import { Container, StyledCloseIcon, TextDiv, StyledButton } from './alert-container.styled'
+
+const AlertContainer = ({changeText, onAccept, onClose}) => {
+    // console.log(changeText, closeFunction)
+    return <Container>
+        <StyledCloseIcon onClick={onClose} />
+        <TextDiv>El cambio a <strong>{changeText}</strong> eliminará los productos del carrito. ¿Desea continuar?</TextDiv>
+        <StyledButton onClick={onAccept} variant='contained'>Aceptar</StyledButton>
+    </Container>
+}
+
+export default AlertContainer

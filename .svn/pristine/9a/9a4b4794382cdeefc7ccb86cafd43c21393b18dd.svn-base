@@ -1,0 +1,200 @@
+import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import CartTable from '../cart-table';
+import { Header, StyledTitle, StyledMoneyText, TableContainer, FlexContainer, SummaryContainer, LeftContainer, DetailContainer, 
+  DetailText, PinContainer, StyledTextField, StyledButton, StyledClearIcon, TooltipTitle, ReasonContainer, NumberText, CircularProgressContainer, StyledCircularProgress } from './confirmation-modal.styled'
+import { postHttpResponse } from '../../api/helper';
+import HtmlTooltip from '../htmlTooltip';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '91%',
+  height: '85%',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  borderRadius: '4px',
+  boxShadow: 24,
+};
+
+export default function BasicModal({setAlert, selectedAccountTypeId, open, subTotal, itbis, setOpen, selectedProducts, employee, balance, companyBranchId}) {
+  const [pinValue, setPinValue] = useState('')
+  const [openTooltip, setOpenTooltip] = useState(false)
+  const [openReasonTooltip, setOpenReasonTooltip] = useState(false)
+  const [orderReason, setOrderReason] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const postOrder = async (body) => {
+    setIsLoading(true)
+    try{
+        const response = await postHttpResponse('create-order-service/createposorder', body)
+        console.log(response)
+    }
+    catch(error){
+        setAlert({open: true, severity: 'error', message: error?.message || 'Ocurrió un error buscando los datos', duration: 3000})
+    }
+    setIsLoading(false)
+}
+
+  const handleReasonChange = (value) => {
+    if (value.length <= 700){
+      setOrderReason(value)
+    }
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+    setOpenTooltip(false);
+  }
+
+  const handlePinChange = (value)=>{
+    if(value.length > 4) return
+    setPinValue(value)
+  }
+
+  const handleOpenTooltip = () => {
+    setOpenTooltip(true)
+    setTimeout(()=> setOpenTooltip(false), 3000)
+  }
+
+  const handleOpenReasonTooltip = () => {
+    setOpenReasonTooltip(true)
+    setTimeout(()=> setOpenReasonTooltip(false), 3000)
+  }
+
+  const handleConfirm = () => {
+    console.log('confirm')
+    
+    if (pinValue.length < 4){
+      handleOpenTooltip()
+      return
+    }
+    if (orderReason.length === 0){
+      // handleOpenReasonTooltip()
+      // return
+    }
+
+    const orderProducts = selectedProducts.map(product => {
+      return {
+        cashOrCardValue: 0,
+        catalogId: product.catalogId,
+        combo: product.combo,
+        deliveryDate: product.deliveryDate,
+        deliveryTypeId: product.deliveryTypeId,
+        itemId: product.id,
+        orderReason,
+        providerId: product.providerId,
+        quantity: product.quantity,
+        sections: product.sections,
+        subTotal: product.price,
+        userType: product.userType
+      }
+    })
+    const payload = {
+      id: employee.id,
+      nameUser: employee.name,
+      paymentMethod: '1',
+      pin: pinValue,
+      products: orderProducts,
+      selectedCompanyBranchId: companyBranchId,
+      vendorId: 2829
+    }
+    postOrder(payload)
+    console.log(payload)
+  }
+
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+      >
+        <Box sx={style}>
+          <FlexContainer>
+            <LeftContainer>
+              <Header backgroundcolor={selectedAccountTypeId === 1 ? '#6ec4e8' : '#ff8d6a'}>
+                <StyledTitle>{employee.name}</StyledTitle>
+                <StyledMoneyText>{`RD$ ${balance}`}</StyledMoneyText>
+              </Header>
+              <TableContainer>
+                <CartTable selectedProducts={selectedProducts} balance={balance}/>
+              </TableContainer>
+            </LeftContainer>
+            <SummaryContainer>
+              <StyledClearIcon onClick={handleClose}/>
+              <DetailContainer>
+                <DetailText>
+                  Subtotal
+                </DetailText>
+                <DetailText>
+                {`RD $${subTotal.toFixed(2)}`}
+                </DetailText>
+              </DetailContainer>
+
+              {Object.entries(itbis).map(entry =><DetailContainer key={entry[0]}>
+                <DetailText>
+                  {entry[0]} 
+                </DetailText>
+                <DetailText>
+                  {`RD$ ${entry[1].toFixed(2)}`}
+                </DetailText>
+              </DetailContainer> )}
+
+              <DetailContainer>
+                <DetailText textColor='#6ec4e8'>
+                  Subsidio
+                </DetailText>
+                <DetailText textColor='#6ec4e8'>
+                {`RD $${balance}`}
+                </DetailText>
+              </DetailContainer>
+
+              <DetailContainer>
+                <DetailText bold>
+                  Total
+                </DetailText>
+                <DetailText bold>
+                  {`RD$ ${(subTotal + Object.entries(itbis).reduce((acc, current) => acc + current[1],0)).toFixed(2)}`}
+                </DetailText>
+              </DetailContainer>
+
+              <PinContainer>
+                <DetailText bold>
+                    Digitar Pin
+                  </DetailText>
+                  <HtmlTooltip arrow open={openTooltip} placement='bottom-start' title={<TooltipTitle>Digita el PIN</TooltipTitle>}>
+                    <StyledTextField variant="outlined" type='password' value={pinValue} onChange={(e)=>handlePinChange(e.target.value)}
+                      inputProps={{
+                        style: {fontSize: 24} 
+                      }}
+                    />
+                  </HtmlTooltip>
+                  {selectedAccountTypeId === 2 && <ReasonContainer openTooltip={openTooltip}>
+                    <DetailText align='left' marginBottom={11} >
+                      Razón de Orden*
+                    </DetailText>
+                    <HtmlTooltip arrow open={openReasonTooltip} placement='bottom-start' title={<TooltipTitle>Especifique la Razón de Orden</TooltipTitle>}>
+                      <StyledTextField multiline  minRows={2} maxRows={7} variant="outlined" value={orderReason} onChange={(e)=>handleReasonChange(e.target.value)}
+                        inputProps={{
+                          style: {fontSize: 18} 
+                        }}
+                      /> 
+                    </HtmlTooltip>
+                    <NumberText>
+                      {`${orderReason.length} / 700`}
+                    </NumberText>
+                    </ReasonContainer>}
+                  <StyledButton openTooltip={(openTooltip && selectedAccountTypeId === 1) || (openReasonTooltip && selectedAccountTypeId === 2)} onClick={handleConfirm} variant='contained'>
+                    {isLoading ? <CircularProgressContainer><StyledCircularProgress/></CircularProgressContainer> : 'Confirmar'}
+                  </StyledButton>
+                </PinContainer>
+            </SummaryContainer>
+          </FlexContainer>
+        </Box>
+      </Modal>
+    </div>
+  );
+}

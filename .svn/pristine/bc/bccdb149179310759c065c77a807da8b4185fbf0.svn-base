@@ -1,0 +1,17 @@
+import React from 'react'
+import { MainContainer, StyledTextField, Container } from './login.styled'
+
+const Landing = () => {
+    return <MainContainer>
+                <Container>
+                    <StyledTextField variant="outlined"
+                            InputProps={{ sx: { borderRadius: 50 } }}
+                            inputProps={{
+                            style: {fontSize: 12, padding: 14 } 
+                            }}
+                        />
+                </Container>
+    </MainContainer>
+}
+
+export default Landing

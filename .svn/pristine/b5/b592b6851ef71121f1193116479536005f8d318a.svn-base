@@ -1,0 +1,6 @@
+export const paymentMethods ={
+    nomina: 0,
+    efectivo: 1,
+    tarjeta: 2
+}
+

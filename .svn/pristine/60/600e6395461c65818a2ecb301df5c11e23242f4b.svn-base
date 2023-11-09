@@ -1,0 +1,170 @@
+import React, { useState, useMemo } from 'react';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import CartTable from '../cart-table';
+import Tooltip, { tooltipClasses }  from '@mui/material/Tooltip'; 
+import { styled } from '@mui/material/styles';
+import { Header, StyledTitle, StyledMoneyText, TableContainer, FlexContainer, SummaryContainer, LeftContainer, DetailContainer, 
+  DetailText, PinContainer, StyledTextField, StyledButton, StyledClearIcon, TooltipTitle } from './confirmation-modal.styled'
+
+  const HtmlTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: '#ff6f66',
+      color: 'rgba(0, 0, 0, 0.87)',
+      fontSize: theme.typography.pxToRem(12),
+      border: '1px solid #dadde9',
+      height:'50px',
+      width: '162px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'start',
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+        color: '#ff6f66',
+        left: "-75px !important",
+        "&:before": {
+            border: '1px solid #dadde9'
+          },
+      }
+  }));
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '91%',
+  height: '85%',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  borderRadius: '4px',
+  boxShadow: 24,
+};
+
+export default function BasicModal({open, subTotal, itbis, setOpen, selectedProducts, employee, balance, companyBranchId}) {
+  const [pinValue, setPinValue] = useState('')
+  const [openTooltip, setOpenTooltip] = useState(false)
+  const handleClose = () => {
+    setOpen(false);
+    setOpenTooltip(false);
+  }
+
+  const handlePinChange = (value)=>{
+    if(value.length > 4) return
+    setPinValue(value)
+  }
+
+  const handleOpenTooltip = () => {
+    setOpenTooltip(true)
+    setTimeout(()=> setOpenTooltip(false), 3000)
+  }
+
+  const handleConfirm = () => {
+
+    const orderProducts = selectedProducts.map(product => {
+      return {
+        cashOrCardValue: 0,
+        catalogId: product.catalogId,
+        combo: product.combo,
+        deliveryDate: product.deliveryDate,
+        deliveryTypeId: product.deliveryTypeId,
+        itemId: product.id,
+        orderReason: '',
+        providerId: product.providerId,
+        quantity: product.quantity,
+        sections: product.sections,
+        subTotal: product.price,
+        userType: product.userType
+      }
+    })
+    const payload = {
+      id: employee.id,
+      nameUser: employee.name,
+      paymentMethod: '1',
+      pin: pinValue,
+      products: orderProducts,
+      selectedCompanyBranchId: companyBranchId,
+      vendorId: 2829
+    }
+
+    console.log(payload)
+    if (pinValue.length < 4){
+      handleOpenTooltip()
+    }
+  }
+
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+      >
+        <Box sx={style}>
+          <FlexContainer>
+            <LeftContainer>
+              <Header>
+                <StyledTitle>{employee.name}</StyledTitle>
+                <StyledMoneyText>{`RD$ ${balance}`}</StyledMoneyText>
+              </Header>
+              <TableContainer>
+                <CartTable selectedProducts={selectedProducts} balance={balance}/>
+              </TableContainer>
+            </LeftContainer>
+            <SummaryContainer>
+              <StyledClearIcon onClick={handleClose}/>
+              <DetailContainer>
+                <DetailText>
+                  Subtotal
+                </DetailText>
+                <DetailText>
+                {`RD $${subTotal}`}
+                </DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailText>
+                  ITBIS(18%) 
+                </DetailText>
+                <DetailText>
+                  {`RD $${itbis}`}
+                </DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailText textColor='#6ec4e8'>
+                  Subsidio
+                </DetailText>
+                <DetailText textColor='#6ec4e8'>
+                  RD $302.08
+                </DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailText bold>
+                  Total
+                </DetailText>
+                <DetailText bold>
+                  {`RD$ ${(subTotal + itbis).toFixed(2)}`}
+                </DetailText>
+              </DetailContainer>
+              <PinContainer>
+                <DetailText bold>
+                    Digitar Pin
+                  </DetailText>
+                  <HtmlTooltip arrow open={openTooltip} placement='bottom-start' title={<TooltipTitle>Digita el PIN</TooltipTitle>}>
+                    <StyledTextField variant="outlined" type='password' value={pinValue} onChange={(e)=>handlePinChange(e.target.value)}
+                      inputProps={{
+                        style: {fontSize: 24} 
+                      }}
+                    />
+                  </HtmlTooltip>
+                  <StyledButton openTooltip={openTooltip} onClick={handleConfirm} variant='contained'>
+                    Confirmar
+                  </StyledButton>
+                </PinContainer>
+            </SummaryContainer>
+          </FlexContainer>
+        </Box>
+      </Modal>
+    </div>
+  );
+}

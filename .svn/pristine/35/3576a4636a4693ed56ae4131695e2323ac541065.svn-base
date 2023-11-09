@@ -1,0 +1,32 @@
+import React, {useState, useContext} from 'react'
+import { Context } from './store/context';
+
+import MainPage from './pages/mainPage/mainPage';
+import Login from './pages/login';
+import { postHttpAuthResponse } from './api/helper';
+
+function App() {
+  const theContext = useContext(Context)
+  const isAuthenticated = theContext.token && theContext.userId && theContext.providerId
+
+  const authenticationRequest = async () => {
+    const body = {
+      userId: '63838',
+      password: 'Prueba01'
+    }
+    const response = await postHttpAuthResponse('authentication-service/users/login', body)
+    console.log(response)
+    return {token: '6820a432-4f0a-4c43-911a-d9d3b8555fc2', userId: '63838', providerId: 839, provider: 'Tropicana Gourmet'}
+  }
+
+  const loginHandler = async() => {
+    const authenticationResponse = await authenticationRequest()
+    theContext.authenticate(authenticationResponse)
+  }
+
+  return isAuthenticated ? 
+    <MainPage /> :
+    <Login loginHandler={loginHandler}/> 
+}
+
+export default App;

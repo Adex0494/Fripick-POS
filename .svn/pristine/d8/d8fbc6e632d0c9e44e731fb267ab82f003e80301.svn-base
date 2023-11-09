@@ -1,0 +1,50 @@
+import React, {useState, useContext} from 'react'
+import { Context } from './store/context';
+
+import MainPage from './pages/mainPage/mainPage';
+import Login from './pages/login';
+import { postHttpAuthResponse } from './api/helper';
+
+
+function App() {
+  const theContext = useContext(Context)
+  const isAuthenticated = theContext.token && theContext.userId && theContext.providerId
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoginFail, setIsLoginFail] = useState(false)
+  const [openAlert, setOpenAlert] = useState(false)
+
+  const authenticationRequest = async (userName, password) => {
+    const body = {
+      userName,
+      password
+    }
+    try{
+
+      const response = await postHttpAuthResponse('authentication-service/users/loginPos', body)
+      if (response.data?.success){
+        const {token, userName: userId, providerId} = response.data.userInfo
+        theContext.authenticate({token, userId, providerId})
+      }else{
+        setIsLoginFail(true)
+      }
+    }
+    catch(error){
+      setOpenAlert(true)
+    }
+
+  }
+
+  const loginHandler = async(userName, password) => {
+    setIsLoading(true)
+    setIsLoginFail(false)
+    await authenticationRequest(userName, password)
+    setIsLoading(false)
+  }
+
+  return isAuthenticated ? 
+    <MainPage /> :
+    <Login loginHandler={loginHandler} isLoading={isLoading} isLoginFail={isLoginFail} 
+    openAlert={openAlert} setOpenAlert={setOpenAlert}/> 
+}
+
+export default App;

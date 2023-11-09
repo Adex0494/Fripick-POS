@@ -1,0 +1,30 @@
+import React from 'react'
+import { MainContainer, StyledTextField, Container, StyledButton, ButtonText, Logo } from './login.styled'
+import LogoFripick from '../../assets/logoFripick.svg'
+
+const Login = ({loginHandler}) => {
+    return <MainContainer>
+                <Container>
+                    <Logo src={LogoFripick}/>
+                    <StyledTextField variant="outlined"
+                            InputProps={{ sx: { borderRadius: 50, boxShadow: '1px 1px 6px 0px rgba(37, 62, 145, 0.17)'} }}
+                            inputProps={{
+                            style: {fontSize: 12, padding: 14 } 
+                            }}
+                        />
+                    <StyledTextField variant="outlined" type='password'
+                        InputProps={{ sx: { borderRadius: 50 } }}
+                        inputProps={{
+                        style: {fontSize: 12, padding: 14 } 
+                        }}
+                    />
+                    <StyledButton onClick={loginHandler} variant='contained'>
+                        <ButtonText bold>
+                            Entrar
+                        </ButtonText>
+                    </StyledButton>
+                </Container>
+    </MainContainer>
+}
+
+export default Login

@@ -1,0 +1,25 @@
+import React, {useState, useContext} from 'react'
+import { Context } from './store/context';
+
+import MainPage from './pages/mainPage/mainPage';
+import Login from './pages/login';
+
+function App() {
+  const theContext = useContext(Context)
+  const isAuthenticated = theContext.token && theContext.userId && theContext.providerId
+
+  const authenticationRequest = () => {
+    return {token: '6820a432-4f0a-4c43-911a-d9d3b8555fc2', userId: '63838', providerId: 839}
+  }
+
+  const loginHandler = () => {
+    const authenticationResponse = authenticationRequest()
+    theContext.authenticate(authenticationResponse)
+  }
+
+  return isAuthenticated ? 
+    <MainPage /> :
+    <Login loginHandler={loginHandler}/> 
+}
+
+export default App;

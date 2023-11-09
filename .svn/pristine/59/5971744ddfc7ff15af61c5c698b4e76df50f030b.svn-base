@@ -1,0 +1,22 @@
+import React from 'react'
+import { MethodContainer, StyledTextField, TooltipTitle, Text } from './payment-amount-container.styled'
+import { paymentMethods } from '../../constants'
+import HtmlTooltip from '../htmlTooltip'
+
+const PaymentAmountContainer = ({amount, primaryPaymentMethod, secondaryPaymentMethod, setCashValue, openTooltip, cashValue}) => {
+
+    return <MethodContainer>
+           {primaryPaymentMethod === paymentMethods.nomina ? <Text>{secondaryPaymentMethod === paymentMethods.efectivo ? 'Efectivo' : 'Tarjeta'} <strong>RD$ {amount.toFixed(2)}</strong></Text> : null }
+           { (primaryPaymentMethod === paymentMethods.efectivo || secondaryPaymentMethod === paymentMethods.efectivo) && <>
+                <HtmlTooltip arrow open={openTooltip} placement='bottom-start' title={<TooltipTitle>El monto a pagar debe ser mayor o igual que <strong>Total Efectivo</strong></TooltipTitle>}>
+                    <StyledTextField openTooltip={openTooltip} value={cashValue} onChange={(e) => {setCashValue(e.target.value)}} variant="outlined" type='number' placeholder='Digitar monto recibido'
+                        inputProps={{
+                                style: {fontSize: 16, height:8} 
+                            }}/>
+                </HtmlTooltip>
+                <Text>Devuelta: <strong>RD$ {(cashValue - amount >0 ? (cashValue - amount) : 0).toFixed(2)}</strong></Text>
+           </>}
+    </MethodContainer>
+}
+
+export default PaymentAmountContainer

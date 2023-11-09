@@ -1,0 +1,14 @@
+import React from 'react'
+
+import MainPage from './pages/mainPage/mainPage';
+import Landing from './pages/login';
+
+const landing = true
+
+function App() {
+  return landing ? 
+    <Landing/> : 
+    <MainPage />
+}
+
+export default App;
