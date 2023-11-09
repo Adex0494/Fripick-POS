@@ -215,12 +215,13 @@ import mainReducer, { actionTypes, initialState } from './reducer';
 // ---------------------------- Functions ------------------------------------------------------
 
     const setFilterProductInputValueHandler = (value) => {
+        console.log(value)
         dispatch({type: actionTypes.setSelectedLetter, payload: null})
-        dispatch({action: actionTypes.setFilterProductInputValue, payload: value})
+        dispatch({type: actionTypes.setFilterProductInputValue, payload: value})
     }
 
     const setSelectedLetterHandler = (letter) => {
-        dispatch({action: actionTypes.setFilterProductInputValue, payload: ''})
+        dispatch({type: actionTypes.setFilterProductInputValue, payload: ''})
         dispatch({type: actionTypes.setSelectedLetter, payload: letter})
     }
 
