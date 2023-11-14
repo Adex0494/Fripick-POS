@@ -30,7 +30,7 @@ const Login = ({ loginHandler, isLoading, isLoginFail, openAlert, setOpenAlert }
     useEffect(() => {
         if (isLoginFail) {
             setValidation(false)
-            setValidationText('Usuario o contraseña incorrectosss')
+            setValidationText('Usuario o contraseña incorrectos')
         }
     }, [isLoginFail])
 
