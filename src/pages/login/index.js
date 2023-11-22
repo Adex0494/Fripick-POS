@@ -92,7 +92,7 @@ const Login = ({ loginHandler, isLoading, isLoginFail, openAlert, setOpenAlert }
                 <p>{validationText}</p>
             </ValidationContainer>}
 
-            <ForgotPasswAText href='https://fripick.com/login/#'>Olvidé mi Contraseña</ForgotPasswAText>
+            <ForgotPasswAText href='https://fripick.com/login/#'>Olvidé mi Contraseñapg</ForgotPasswAText>
             <StyledButton onClick={processLoginValues} variant='contained'>
                 {isLoading ? <CircularProgressContainer><StyledCircularProgress /></CircularProgressContainer> :
                     <ButtonText>
